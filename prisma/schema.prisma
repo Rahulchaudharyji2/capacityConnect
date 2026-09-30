@@ -1,0 +1,238 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  units     OrganizationalUnit[]
+  users     User[]
+}
+
+model OrganizationalUnit {
+  id             String   @id @default(uuid())
+  organizationId String
+  name           String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  users          User[]
+}
+
+model User {
+  id                   String   @id @default(uuid())
+  email                String   @unique
+  passwordHash         String
+  firstName            String
+  lastName             String
+  organizationId       String?
+  organizationalUnitId String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  organization         Organization?       @relation(fields: [organizationId], references: [id])
+  organizationalUnit   OrganizationalUnit? @relation(fields: [organizationalUnitId], references: [id])
+  roles                UserRole[]
+  enrollments          Enrollment[]
+  ownedCourses         Course[]            @relation("CourseOwner")
+  lessonCompletions    LessonCompletion[]
+  planAssignments      LearningPlanAssignment[]
+  uploadedResources    Resource[]
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique // e.g., LEARNER, TRAINER, COORDINATOR, ADMIN
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       UserRole[]
+}
+
+model UserRole {
+  id        String   @id @default(uuid())
+  userId    String
+  roleId    String
+  createdAt DateTime @default(now())
+
+  user      User @relation(fields: [userId], references: [id])
+  role      Role @relation(fields: [roleId], references: [id])
+
+  @@unique([userId, roleId])
+}
+
+model Course {
+  id          String   @id @default(uuid())
+  title       String
+  summary     String?
+  description String?
+  isPublished Boolean  @default(false)
+  ownerId     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  owner       User?          @relation("CourseOwner", fields: [ownerId], references: [id])
+  enrollments Enrollment[]
+  sections    CourseSection[]
+  competencies CourseCompetency[]
+  planItems   LearningPlanItem[]
+  resources   Resource[]
+}
+
+model CourseSection {
+  id          String   @id @default(uuid())
+  courseId    String
+  title       String
+  order       Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons     Lesson[]
+}
+
+model Lesson {
+  id          String   @id @default(uuid())
+  sectionId   String
+  title       String
+  content     String?
+  order       Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  section     CourseSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  completions LessonCompletion[]
+  resources   Resource[]
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  action      String
+  entityType  String
+  entityId    String
+  actorId     String?
+  metadata    String?
+  createdAt   DateTime @default(now())
+}
+
+model Enrollment {
+  id        String   @id @default(uuid())
+  userId    String
+  courseId  String
+  status    String   @default("IN_PROGRESS") // ENROLLED, IN_PROGRESS, COMPLETED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User   @relation(fields: [userId], references: [id])
+  course    Course @relation(fields: [courseId], references: [id])
+
+  @@unique([userId, courseId])
+}
+
+model LessonCompletion {
+  id          String   @id @default(uuid())
+  userId      String
+  lessonId    String
+  completedAt DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+}
+
+model Competency {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  name        String
+  description String?
+  category    String?
+  isArchived  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  courses     CourseCompetency[]
+}
+
+model CourseCompetency {
+  id           String     @id @default(uuid())
+  courseId     String
+  competencyId String
+  createdAt    DateTime   @default(now())
+
+  course       Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  competency   Competency @relation(fields: [competencyId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, competencyId])
+}
+
+model LearningPlan {
+  id             String   @id @default(uuid())
+  title          String
+  description    String?
+  targetAudience String?
+  dueDate        DateTime?
+  isArchived     Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  items          LearningPlanItem[]
+  assignments    LearningPlanAssignment[]
+}
+
+model LearningPlanItem {
+  id             String       @id @default(uuid())
+  learningPlanId String
+  courseId       String
+  order          Int
+  createdAt      DateTime     @default(now())
+
+  plan           LearningPlan @relation(fields: [learningPlanId], references: [id], onDelete: Cascade)
+  course         Course       @relation(fields: [courseId], references: [id])
+
+  @@unique([learningPlanId, courseId])
+}
+
+model LearningPlanAssignment {
+  id             String       @id @default(uuid())
+  userId         String
+  learningPlanId String
+  assignedAt     DateTime     @default(now())
+
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan           LearningPlan @relation(fields: [learningPlanId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, learningPlanId])
+}
+
+model Resource {
+  id           String   @id @default(uuid())
+  displayName  String
+  description  String?
+  originalName String
+  mimeType     String
+  sizeBytes    Int
+  storageKey   String   @unique
+  courseId     String?
+  lessonId     String?
+  uploaderId     String
+  extractedText  String?
+  indexingStatus String   @default("PENDING") // PENDING, SUCCESS, FAILED
+  isArchived     Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  uploader     User     @relation(fields: [uploaderId], references: [id])
+  course       Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lesson       Lesson?  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+}
