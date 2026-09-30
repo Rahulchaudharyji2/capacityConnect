@@ -1803,3 +1803,64 @@ https://react.dev/link/hydration-mismatch
   207 |         </CardContent>
   208 |       </Card>
   209 |     </div>
+[browser] Uncaught Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <div data-slot="sidebar-co..." data-side="left" className="fixed inse...">
+      <div data-sidebar="sidebar" data-slot="sidebar-inner" className="flex size-...">
+        <SidebarHeader>
+        <SidebarContent>
+          <div data-slot="sidebar-co..." data-sidebar="content" className="no-scrollb...">
+            <SidebarGroup>
+              <div data-slot="sidebar-group" data-sidebar="group" className="relative f...">
+                <SidebarGroupLabel>
+                <SidebarGroupContent>
+                  <div data-slot="sidebar-gr..." data-sidebar="group-content" className="w-full tex...">
+                    <SidebarMenu>
+                      <ul data-slot="sidebar-menu" data-sidebar="menu" className="flex w-ful...">
+                        <SidebarMenuItem>
+                          <li data-slot="sidebar-me..." data-sidebar="menu-item" className="group/menu...">
+                            <SidebarMenuButton asChild={true}>
+                              <LinkComponent href="/dashboard" data-slot="sidebar-me..." data-sidebar="menu-button" ...>
++                               <a
++                                 data-slot="sidebar-menu-button"
++                                 data-sidebar="menu-button"
++                                 data-size="default"
++                                 className={"peer/menu-button group/menu-button flex w-full items-center gap-3 overf..."}
++                                 ref={function}
++                                 onClick={function onClick}
++                                 onMouseEnter={function onMouseEnter}
++                                 onTouchStart={function onTouchStart}
++                                 href="/dashboard"
++                               >
+-                               <button
+-                                 type="button"
+-                                 data-slot="sidebar-menu-button"
+-                                 data-sidebar="menu-button"
+-                                 data-size="default"
+-                                 className={"peer/menu-button group/menu-button flex w-full items-center gap-3 overf..."}
+-                               >
+                        ...
+            ...
+
+    at <unknown> (https://react.dev/link/hydration-mismatch)
+    at a (<anonymous>)
+    at AppSidebar (src\components\layout\AppSidebar.tsx:40:19)
+    at AppLayout (src\app\(app)\layout.tsx:14:9)
+  38 |               <SidebarMenu>
+  39 |                 <SidebarMenuItem>
+> 40 |                   <SidebarMenuButton asChild>
+     |                   ^
+  41 |                     <Link href="/dashboard"><LayoutDashboard /><span>Overview</span></Link>
+  42 |                   </SidebarMenuButton>
+  43 |                 </SidebarMenuItem>
