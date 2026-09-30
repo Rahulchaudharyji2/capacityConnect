@@ -13,7 +13,7 @@ export async function getCurrentUser() {
   if (!token) return null
 
   try {
-    const secret = new TextEncoder().encode(JWT_SECRET)
+    const secret = new TextEncoder().encode(jwtSecretStr)
     const { payload } = await jwtVerify(token, secret, {
       algorithms: ['HS256'],
       issuer: 'capacity-connect',

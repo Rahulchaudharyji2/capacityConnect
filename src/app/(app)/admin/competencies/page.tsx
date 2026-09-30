@@ -30,29 +30,29 @@ export default async function CompetenciesPage() {
 
       <div className="grid md:grid-cols-[300px_1fr] gap-8">
         <div>
-          <Card>
-            <CardHeader>
+          <Card className="bg-background/40 backdrop-blur-xl border-white/10 shadow-sm sticky top-24">
+            <CardHeader className="bg-primary/5 border-b border-border/50">
               <CardTitle>Add Competency</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               <form action={createCompetency} className="flex flex-col gap-4">
                 <div className="space-y-2">
                   <label htmlFor="name" className="text-sm font-medium">Name</label>
-                  <Input id="name" name="name" required placeholder="e.g. Data Analysis" />
+                  <Input id="name" name="name" required placeholder="e.g. Data Analysis" className="bg-background/50" />
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="key" className="text-sm font-medium">Unique Key</label>
-                  <Input id="key" name="key" required placeholder="e.g. COMP-DATA-01" className="font-mono text-sm" />
+                  <Input id="key" name="key" required placeholder="e.g. COMP-DATA-01" className="font-mono text-sm bg-background/50" />
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="category" className="text-sm font-medium">Category (Optional)</label>
-                  <Input id="category" name="category" placeholder="e.g. Technical Skills" />
+                  <Input id="category" name="category" placeholder="e.g. Technical Skills" className="bg-background/50" />
                 </div>
                 <div className="space-y-2">
                   <label htmlFor="description" className="text-sm font-medium">Description</label>
-                  <Textarea id="description" name="description" rows={3} />
+                  <Textarea id="description" name="description" rows={3} className="bg-background/50 resize-none" />
                 </div>
-                <Button type="submit" className="w-full mt-2">
+                <Button type="submit" className="w-full mt-4 shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all">
                   <Plus className="mr-2 h-4 w-4" /> Create
                 </Button>
               </form>
@@ -61,35 +61,36 @@ export default async function CompetenciesPage() {
         </div>
 
         <div>
-          <Card>
-            <CardHeader>
+          <Card className="bg-background/40 backdrop-blur-xl border-white/10 shadow-sm overflow-hidden">
+            <CardHeader className="bg-primary/5 border-b border-border/50">
               <CardTitle>Active Competencies</CardTitle>
               <CardDescription>All defined competencies available for mapping.</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
               {competencies.length === 0 ? (
-                <div className="text-center py-8 text-muted-foreground">No competencies defined yet.</div>
+                <div className="text-center py-12 text-muted-foreground">No competencies defined yet.</div>
               ) : (
-                <div className="flex flex-col gap-4">
+                <div className="divide-y divide-border/50">
                   {competencies.map(comp => (
-                    <div key={comp.id} className={`flex items-start justify-between border-b pb-4 last:border-0 last:pb-0 ${comp.isArchived ? 'opacity-60' : ''}`}>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-semibold text-primary">{comp.name}</h3>
-                          {comp.isArchived && <span className="text-xs bg-muted px-2 py-1 rounded">Archived</span>}
+                    <div key={comp.id} className={`flex items-start justify-between p-6 hover:bg-secondary/10 transition-colors ${comp.isArchived ? 'opacity-60 grayscale' : ''}`}>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3">
+                          <h3 className="font-semibold text-lg text-primary">{comp.name}</h3>
+                          {comp.isArchived && <span className="text-xs bg-muted px-2 py-0.5 rounded-full border border-border/50">Archived</span>}
                         </div>
-                        <div className="text-xs font-mono text-muted-foreground mt-1">{comp.key}</div>
+                        <div className="text-xs font-mono text-muted-foreground mt-1.5 bg-background/50 inline-block px-2 py-0.5 rounded">{comp.key}</div>
                         {comp.description && (
-                          <p className="text-sm mt-2 text-foreground/80 line-clamp-2">{comp.description}</p>
+                          <p className="text-sm mt-3 text-foreground/80 leading-relaxed">{comp.description}</p>
                         )}
-                        <div className="text-sm text-muted-foreground mt-3">
+                        <div className="text-sm text-muted-foreground mt-4 flex items-center gap-2">
+                          <span className="w-2 h-2 rounded-full bg-primary/40"></span>
                           Mapped to {comp._count.courses} Courses
                         </div>
                       </div>
                       {!comp.isArchived && (
                         <form action={archiveCompetency.bind(null, comp.id)}>
-                          <Button variant="ghost" size="sm" type="submit" title="Archive">
-                            <Archive className="h-4 w-4 text-muted-foreground" />
+                          <Button variant="ghost" size="icon" type="submit" title="Archive" className="hover:bg-destructive/10 hover:text-destructive">
+                            <Archive className="h-4 w-4" />
                           </Button>
                         </form>
                       )}

@@ -51,7 +51,7 @@ export const storage = {
         await fs.unlink(filePath)
       }
     } catch (err: unknown) {
-      if (err.code !== 'ENOENT') {
+      if ((err as any).code !== 'ENOENT') {
         throw err
       }
     }

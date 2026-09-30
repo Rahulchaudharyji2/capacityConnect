@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from "next/server"
 import { getCurrentUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { storage } from "@/lib/storage"
-import pdfParse from "pdf-parse"
 
 export async function POST(request: NextRequest) {
+  const pdfParse = require("pdf-parse")
   const user = await getCurrentUser()
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })

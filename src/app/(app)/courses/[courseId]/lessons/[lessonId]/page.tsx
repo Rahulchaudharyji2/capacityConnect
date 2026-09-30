@@ -7,11 +7,12 @@ import { ArrowLeft, CheckCircle, Download, FileText } from "lucide-react"
 import Link from "next/link"
 import { markLessonComplete } from "./actions"
 
-export default async function LessonViewer({ params }: { params: { courseId: string, lessonId: string } }) {
+export default async function LessonViewer({ params }: { params: Promise<{ courseId: string, lessonId: string }> }) {
+  const { courseId, lessonId } = await params
   const user = await requireUser()
   
   const course = await prisma.course.findUnique({
-    where: { id: params.courseId },
+    where: { id: courseId },
     include: {
       sections: {
         orderBy: { order: 'asc' },
@@ -38,11 +39,11 @@ export default async function LessonViewer({ params }: { params: { courseId: str
   const isAdmin = userRoles.includes('ADMIN')
 
   if (!isEnrolled && !isAuthorizedTrainer && !isAdmin) {
-    redirect(`/courses/${params.courseId}`)
+    redirect(`/courses/${courseId}`)
   }
 
   const lesson = await prisma.lesson.findUnique({
-    where: { id: params.lessonId },
+    where: { id: lessonId },
     include: {
       section: true,
       completions: {
@@ -52,7 +53,7 @@ export default async function LessonViewer({ params }: { params: { courseId: str
     }
   })
 
-  if (!lesson || lesson.section.courseId !== params.courseId) {
+  if (!lesson || lesson.section.courseId !== courseId) {
     return <div>Lesson not found</div>
   }
 
@@ -65,7 +66,7 @@ export default async function LessonViewer({ params }: { params: { courseId: str
     <div className="flex flex-col gap-6 max-w-4xl mx-auto w-full">
       <div className="mb-4">
         <Button variant="ghost" size="sm" asChild className="pl-0 text-muted-foreground">
-          <Link href={`/courses/${params.courseId}`}>
+          <Link href={`/courses/${courseId}`}>
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Course
           </Link>
         </Button>
@@ -119,7 +120,7 @@ export default async function LessonViewer({ params }: { params: { courseId: str
                 <CheckCircle className="mr-2 h-4 w-4 text-success" /> Completed
              </Button>
            ) : (
-             <form action={markLessonComplete.bind(null, params.courseId, params.lessonId)}>
+             <form action={markLessonComplete.bind(null, courseId, lessonId)}>
                <Button type="submit">Mark as Complete</Button>
              </form>
            )}

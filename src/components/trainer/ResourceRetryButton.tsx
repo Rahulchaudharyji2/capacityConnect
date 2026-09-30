@@ -23,7 +23,7 @@ export function ResourceRetryButton({ courseId, resourceId }: Props) {
       if (result.error) {
         setError(result.error)
       } else if (!result.success) {
-        setError(result.message)
+        setError(result.message || "Failed to retry")
       }
     } catch (err: unknown) {
       setError("An unexpected error occurred.")

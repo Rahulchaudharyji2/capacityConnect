@@ -1,3 +1,4 @@
+import * as React from "react"
 import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "cn"
@@ -43,14 +44,54 @@ function Button({
   className,
   variant = "default",
   size = "default",
+  asChild = false,
+  render,
+  children,
+  nativeButton: explicitNativeButton,
   ...props
-}: ButtonPrimitive.Props & VariantProps<typeof buttonVariants>) {
+}: ButtonPrimitive.Props &
+  VariantProps<typeof buttonVariants> & {
+    asChild?: boolean
+  }) {
+  const classes = cn(buttonVariants({ variant, size, className }))
+
+  // Legacy `asChild` API (Radix-style: <Button asChild><a .../></Button>)
+  // maps to Base UI `render` prop. Strip `asChild` so it never reaches the DOM.
+  if (asChild && React.isValidElement(children)) {
+    const child = children as React.ReactElement<{ nativeButton?: boolean }>
+    const isNativeButtonElement =
+      typeof child.type === "string" &&
+      (child.type as string).toLowerCase() === "button"
+    return (
+      <ButtonPrimitive
+        data-slot="button"
+        className={classes}
+        render={child}
+        nativeButton={
+          explicitNativeButton ?? (isNativeButtonElement ? undefined : false)
+        }
+        {...props}
+      />
+    )
+  }
+
+  const renderIsNonButtonElement =
+    React.isValidElement(render) &&
+    typeof (render as React.ReactElement).type === "string" &&
+    ((render as React.ReactElement).type as string).toLowerCase() !== "button"
+
   return (
     <ButtonPrimitive
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={classes}
+      render={render}
+      nativeButton={
+        explicitNativeButton ?? (renderIsNonButtonElement ? false : undefined)
+      }
       {...props}
-    />
+    >
+      {children}
+    </ButtonPrimitive>
   )
 }
 

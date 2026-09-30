@@ -9,10 +9,11 @@ import Link from "next/link"
 export default async function KnowledgeLibraryPage({
   searchParams,
 }: {
-  searchParams: { q?: string }
+  searchParams: Promise<{ q?: string }>
 }) {
+  const { q } = await searchParams;
   const user = await requireUser()
-  const query = searchParams.q?.trim()
+  const query = q?.trim()
 
   const userRoles = user.roles.map(r => r.role.name)
   const isAdmin = userRoles.includes("ADMIN")
@@ -111,37 +112,42 @@ export default async function KnowledgeLibraryPage({
         </p>
       </div>
 
-      <Card>
-        <CardContent className="pt-6">
-          <form className="flex gap-2" method="GET" action="/knowledge">
+      <Card className="bg-background/40 backdrop-blur-xl border-white/10 shadow-sm relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent pointer-events-none" />
+        <CardContent className="pt-6 relative z-10">
+          <form className="flex gap-3" method="GET" action="/knowledge">
             <div className="relative flex-grow">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-4 top-3.5 h-5 w-5 text-muted-foreground" />
               <Input 
                 name="q"
                 defaultValue={query}
                 placeholder="Search for concepts, keywords, or document names..." 
-                className="pl-9 h-12 text-lg"
+                className="pl-12 h-14 text-lg bg-background/50 border-border/50 rounded-xl focus-visible:ring-primary/50 shadow-sm transition-all"
                 autoComplete="off"
               />
             </div>
-            <Button type="submit" size="lg" className="h-12 px-8">Search</Button>
+            <Button type="submit" size="lg" className="h-14 px-8 rounded-xl shadow-lg shadow-primary/20 hover:scale-105 transition-all text-base">Search</Button>
           </form>
         </CardContent>
       </Card>
 
       {!query ? (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <BookOpen className="h-16 w-16 text-muted-foreground/30 mb-6" />
+        <div className="flex flex-col items-center justify-center py-24 text-center bg-background/40 backdrop-blur-xl border border-white/10 rounded-2xl shadow-sm mt-8">
+          <div className="p-4 bg-primary/5 rounded-full mb-6">
+            <BookOpen className="h-12 w-12 text-primary/40" />
+          </div>
           <h3 className="text-xl font-medium text-primary">Start your research</h3>
           <p className="text-muted-foreground mt-2 max-w-md">
             Enter a keyword above to instantly scan thousands of pages of training material attached to your courses.
           </p>
         </div>
       ) : results.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <Search className="h-12 w-12 text-muted-foreground/50 mb-4" />
-          <h3 className="text-lg font-medium text-primary">No results found for "{query}"</h3>
-          <p className="text-muted-foreground mt-1">
+        <div className="flex flex-col items-center justify-center py-24 text-center bg-background/40 backdrop-blur-xl border border-white/10 rounded-2xl shadow-sm mt-8">
+          <div className="p-4 bg-muted/50 rounded-full mb-6">
+            <Search className="h-12 w-12 text-muted-foreground/50" />
+          </div>
+          <h3 className="text-xl font-medium text-primary">No results found for "{query}"</h3>
+          <p className="text-muted-foreground mt-2 max-w-md">
             Try using different keywords or checking if the specific course is published.
           </p>
         </div>

@@ -49,7 +49,7 @@ export function ResourceUploadForm({ courseId, lessonId }: ResourceUploadFormPro
       // Force refresh to show new resource
       router.refresh()
     } catch (err: unknown) {
-      setError(err.message)
+      setError(err instanceof Error ? err.message : String(err))
     } finally {
       setIsUploading(false)
     }

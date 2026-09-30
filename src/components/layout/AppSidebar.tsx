@@ -38,27 +38,27 @@ export async function AppSidebar() {
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <a href="/dashboard"><LayoutDashboard /><span>Overview</span></a>
+                    <Link href="/dashboard"><LayoutDashboard /><span>Overview</span></Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <a href="/learning-plans"><BookOpen /><span>Learning Plans</span></a>
+                    <Link href="/learning-plans"><BookOpen /><span>Learning Plans</span></Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <a href="/catalogue"><Search /><span>Course Catalogue</span></a>
+                    <Link href="/catalogue"><Search /><span>Course Catalogue</span></Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <a href="/knowledge"><BookOpen /><span>Knowledge Library</span></a>
+                    <Link href="/knowledge"><BookOpen /><span>Knowledge Library</span></Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <a href="/calendar"><Calendar /><span>Training Calendar</span></a>
+                    <Link href="/calendar"><Calendar /><span>Training Calendar</span></Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
@@ -73,7 +73,7 @@ export async function AppSidebar() {
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <a href="/trainer/dashboard"><LayoutDashboard /><span>Trainer Overview</span></a>
+                    <Link href="/trainer/dashboard"><LayoutDashboard /><span>Trainer Overview</span></Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
@@ -93,7 +93,7 @@ export async function AppSidebar() {
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <a href="/admin/users"><Shield /><span>Users & Roles</span></a>
+                    <Link href="/admin/users"><Shield /><span>Users & Roles</span></Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
@@ -103,17 +103,17 @@ export async function AppSidebar() {
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <a href="/admin/competencies"><Shield /><span>Competencies</span></a>
+                    <Link href="/admin/competencies"><Shield /><span>Competencies</span></Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <a href="/admin/audit-logs"><Search /><span>Audit Logs</span></a>
+                    <Link href="/admin/audit-logs"><Search /><span>Audit Logs</span></Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <a href="/admin/settings"><Settings /><span>System Settings</span></a>
+                    <Link href="/admin/settings"><Settings /><span>System Settings</span></Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
