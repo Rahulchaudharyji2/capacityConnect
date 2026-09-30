@@ -88,55 +88,56 @@ export default async function LearningPlansPage() {
             const planProgress = totalCourses > 0 ? Math.round((completedCourses / totalCourses) * 100) : 0
 
             return (
-              <Card key={assignment.id} className="overflow-hidden">
-                <CardHeader className="bg-primary/5 border-b">
-                  <div className="flex justify-between items-start gap-4">
+              <Card key={assignment.id} className="bg-background/40 backdrop-blur-xl border-white/10 shadow-sm overflow-hidden hover:shadow-md transition-all">
+                <CardHeader className="bg-primary/5 border-b border-border/50 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent pointer-events-none" />
+                  <div className="flex justify-between items-start gap-4 relative z-10">
                     <div>
-                      <CardTitle className="text-xl">{plan.title}</CardTitle>
+                      <CardTitle className="text-xl font-bold">{plan.title}</CardTitle>
                       <CardDescription className="mt-2 text-base text-foreground/80">{plan.description}</CardDescription>
                       <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground">
                         {plan.dueDate && (
-                          <span className="flex items-center gap-1">
+                          <span className="flex items-center gap-1.5 px-2 py-1 bg-background/50 rounded-md border border-border/50">
                             <Calendar className="h-4 w-4" /> Due: {plan.dueDate.toLocaleDateString()}
                           </span>
                         )}
-                        <span className="flex items-center gap-1">
+                        <span className="flex items-center gap-1.5 px-2 py-1 bg-background/50 rounded-md border border-border/50">
                           <BookOpen className="h-4 w-4" /> {totalCourses} Courses
                         </span>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right flex flex-col items-end">
                       <div className="text-3xl font-bold text-primary">{planProgress}%</div>
-                      <div className="text-sm text-muted-foreground">Plan Complete</div>
+                      <div className="text-sm text-muted-foreground mt-1 font-medium">Complete</div>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent className="p-0">
                   {totalCourses === 0 ? (
-                    <div className="p-6 text-sm text-muted-foreground">This plan has no required courses yet.</div>
+                    <div className="p-8 text-center text-sm text-muted-foreground">This plan has no required courses yet.</div>
                   ) : (
-                    <div className="divide-y">
+                    <div className="divide-y divide-border/50">
                       {coursesWithStatus.map((item, index) => (
-                        <div key={item.id} className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div key={item.id} className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-secondary/10 transition-colors">
                           <div className="flex gap-4 items-start">
-                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm font-medium">
+                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-background border border-border/50 flex items-center justify-center text-sm font-medium text-muted-foreground shadow-sm">
                               {index + 1}
                             </div>
                             <div>
-                              <h4 className="font-medium text-primary">{item.course.title}</h4>
+                              <h4 className="font-semibold text-primary">{item.course.title}</h4>
                               <p className="text-sm text-muted-foreground line-clamp-1 mt-1">{item.course.summary}</p>
                               
                               <div className="flex items-center gap-4 mt-3 text-sm">
                                 {item.isCompleted ? (
-                                  <span className="flex items-center gap-1 text-success font-medium">
+                                  <span className="flex items-center gap-1.5 text-success font-medium bg-success/10 px-2 py-0.5 rounded-full border border-success/20">
                                     <CheckCircle className="h-4 w-4" /> Completed
                                   </span>
                                 ) : item.enrollment ? (
-                                  <span className="flex items-center gap-1 text-primary">
+                                  <span className="flex items-center gap-1.5 text-primary font-medium bg-primary/10 px-2 py-0.5 rounded-full border border-primary/20">
                                     <Clock className="h-4 w-4" /> In Progress ({item.progressPercentage}%)
                                   </span>
                                 ) : (
-                                  <span className="text-muted-foreground">Not Started</span>
+                                  <span className="text-muted-foreground px-2 py-0.5 rounded-full border border-dashed border-border/50">Not Started</span>
                                 )}
                               </div>
                             </div>
@@ -144,15 +145,15 @@ export default async function LearningPlansPage() {
                           
                           <div className="flex-shrink-0">
                             {item.isCompleted ? (
-                              <Button variant="outline" asChild>
+                              <Button variant="outline" className="shadow-sm hover:scale-105 transition-transform rounded-full" asChild>
                                 <Link href={`/courses/${item.courseId}`}>Review</Link>
                               </Button>
                             ) : item.enrollment ? (
-                              <Button asChild>
+                              <Button className="shadow-md shadow-primary/20 hover:scale-105 transition-transform rounded-full" asChild>
                                 <Link href={`/courses/${item.courseId}`}>Resume</Link>
                               </Button>
                             ) : (
-                              <Button asChild>
+                              <Button variant="secondary" className="shadow-sm hover:scale-105 transition-transform rounded-full" asChild>
                                 <Link href={`/catalogue`}>Find & Enroll</Link>
                               </Button>
                             )}

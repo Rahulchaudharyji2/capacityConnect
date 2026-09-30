@@ -10,12 +10,13 @@ import { ResourceUploadForm } from "@/components/trainer/ResourceUploadForm"
 import { deleteResource } from "./resource-actions"
 import { ResourceRetryButton } from "@/components/trainer/ResourceRetryButton"
 
-export default async function CourseEditor({ params }: { params: { id: string } }) {
+export default async function CourseEditor({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   await requireRole(['TRAINER'])
-  await canManageCourse(params.id)
+  await canManageCourse(id)
 
   const course = await prisma.course.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       sections: {
         orderBy: { order: 'asc' },

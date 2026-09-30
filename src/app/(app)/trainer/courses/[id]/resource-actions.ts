@@ -4,7 +4,6 @@ import { requireRole, canManageCourse } from "@/lib/rbac"
 import { prisma } from "@/lib/prisma"
 import { storage } from "@/lib/storage"
 import { revalidatePath } from "next/cache"
-import pdfParse from "pdf-parse"
 import fs from "fs/promises"
 
 export async function deleteResource(courseId: string, resourceId: string) {
@@ -64,7 +63,7 @@ export async function retryIndexing(courseId: string, resourceId: string) {
     // Ensure we do not accept client paths, strictly use the DB storageKey
     const filePath = `.storage/${resource.storageKey}`
     const fileBuffer = await fs.readFile(filePath)
-
+    const pdfParse = require("pdf-parse")
     const pdfData = await pdfParse(fileBuffer, { max: 100 })
     if (pdfData.text && pdfData.text.length > 0) {
        extractedText = pdfData.text.substring(0, 100000)

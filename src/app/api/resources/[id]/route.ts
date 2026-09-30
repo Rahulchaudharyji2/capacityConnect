@@ -3,15 +3,16 @@ import { getCurrentUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { storage } from "@/lib/storage"
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const user = await getCurrentUser()
   if (!user) {
     return new NextResponse("Unauthorized", { status: 401 })
   }
 
   const resource = await prisma.resource.findUnique({
-    where: { id: params.id },
-    include: { course: true, lesson: true }
+    where: { id },
+    include: { course: true, lesson: { include: { section: true } } }
   })
 
   if (!resource || resource.isArchived) {
@@ -26,7 +27,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
   // If not admin or owner, verify enrollment
   if (!isAuthorized) {
-    const courseId = resource.courseId || resource.lesson?.courseId
+    const courseId = resource.courseId || resource.lesson?.section.courseId
     if (courseId) {
       const enrollment = await prisma.enrollment.findUnique({
         where: { userId_courseId: { userId: user.id, courseId } }
@@ -52,7 +53,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
   headers.set('X-Content-Type-Options', 'nosniff') // Prevent MIME-sniffing
   headers.set('Content-Length', resource.sizeBytes.toString())
 
-  return new NextResponse(fileBuffer, {
+  return new NextResponse(fileBuffer as unknown as BodyInit, {
     status: 200,
     headers
   })

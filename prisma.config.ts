@@ -1,3 +1,4 @@
+// @ts-ignore - Ignore module not found since this is a Prisma internal config
 import { definePrismaConfig } from "prisma/config";
 
 export default definePrismaConfig({
